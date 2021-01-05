@@ -23,11 +23,34 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>14</maven.compiler.source>
-		<maven.compiler.target>14</maven.compiler.target>
+		<maven.compiler.source>12</maven.compiler.source>
+		<maven.compiler.target>12</maven.compiler.target>
 		<surefireJacocoAgent></surefireJacocoAgent>
 		<failsafeJacocoAgent></failsafeJacocoAgent>
 	</properties>
+
+	<profiles>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<spring.profiles.active>prod</spring.profiles.active>
+				<db.url>jdbc:postgresql://localhost/a</db.url>
+				<!-- set from command line -->
+				<db.username></db.username>
+				<!-- set from command line -->
+				<db.password></db.password>
+			</properties>
+		</profile>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<spring.profiles.active>dev</spring.profiles.active>
+				<db.url>jdbc:h2:./target/h2.db</db.url>
+				<db.username>sa</db.username>
+				<db.password>sa</db.password>
+			</properties>
+		</profile>
+	</profiles>
 
 	<dependencies>
 		<dependency>
@@ -78,7 +101,7 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<scope>test</scope>
+			<!-- <scope>test</scope> -->
 			<version>1.4.200</version>
 		</dependency>
 		<dependency>
@@ -88,6 +111,24 @@
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<excludes>
+					<exclude>*.properties</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>application.properties</include>
+					<include>application-${spring.profiles.active}.properties</include>
+				</includes>
+			</resource>
+		</resources>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
